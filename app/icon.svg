@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#0ea5e9"/>
+  <g transform="rotate(-25 256 256)">
+    <!-- handle -->
+    <rect x="236" y="80" width="40" height="240" rx="20" fill="#ffffff"/>
+    <!-- broom head -->
+    <path d="M 200 320 L 312 320 L 360 432 L 152 432 Z" fill="#ffffff"/>
+    <!-- band separating handle from bristles -->
+    <line x1="170" y1="376" x2="342" y2="376" stroke="#0ea5e9" stroke-width="8" stroke-linecap="round"/>
+    <!-- bristle lines for texture -->
+    <g stroke="#0ea5e9" stroke-width="6" stroke-linecap="round">
+      <line x1="200" y1="382" x2="180" y2="426"/>
+      <line x1="232" y1="382" x2="220" y2="426"/>
+      <line x1="256" y1="382" x2="256" y2="426"/>
+      <line x1="280" y1="382" x2="292" y2="426"/>
+      <line x1="312" y1="382" x2="332" y2="426"/>
+    </g>
+  </g>
+</svg>
