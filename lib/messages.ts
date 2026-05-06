@@ -1,0 +1,159 @@
+// All user-facing strings live here so they are easy to audit and (eventually)
+// localize. v1 is English only; isolation is what matters for now.
+
+export const messages = {
+  app: {
+    name: "Chores",
+    tagline: "Keep the house in shape.",
+  },
+  auth: {
+    signInWithGoogle: "Continue with Google",
+    signOut: "Sign out",
+  },
+  onboarding: {
+    title: "Welcome",
+    chooseCreate: "Create a new household",
+    chooseJoin: "Join with an invite code",
+    householdNamePlaceholder: "The Smiths",
+    inviteCodePlaceholder: "ABCD-1234",
+    createCta: "Create household",
+    joinCta: "Join household",
+    createError: "Could not create the household. Try a different name.",
+    joinError: "That invite code is not valid.",
+  },
+  family: {
+    title: "Family",
+    add: "Add family member",
+    displayName: "Display name",
+    role: "Role",
+    parent: "Parent",
+    child: "Child",
+    color: "Color",
+    birthdate: "Birthdate (optional)",
+    save: "Save",
+    cancel: "Cancel",
+    remove: "Remove",
+    removeConfirm: "Remove this person from the household?",
+    inviteCode: "Invite code",
+    copy: "Copy",
+    copied: "Copied",
+  },
+  dashboard: {
+    title: "Today",
+    overdue: "Overdue",
+    mine: "Mine",
+    everyone: "Everyone",
+    empty: "Nothing scheduled today — enjoy it.",
+    dirtTitle: "How clean is the house?",
+  },
+  tasks: {
+    title: "Tasks",
+    upcoming: "Upcoming",
+    new: "New task",
+    start: "Start",
+    pause: "Pause",
+    done: "Done",
+    skip: "Skip",
+    notes: "Notes",
+    completedBy: "Completed by",
+    duration: "Duration",
+    pending: "Pending",
+    inProgress: "In progress",
+    completed: "Completed",
+    skipped: "Skipped",
+    noChecklist: "This task has no checklist.",
+  },
+  templates: {
+    title: "Templates",
+    new: "New template",
+    name: "Name",
+    description: "Description",
+    area: "Area",
+    duration: "Estimated minutes",
+    checklist: "Checklist",
+    addItem: "Add item",
+    schedules: "Schedules",
+    save: "Save",
+    delete: "Delete",
+  },
+  schedules: {
+    new: "New schedule",
+    rrule: "Recurrence",
+    rruleAdvanced: "Advanced (rrule)",
+    policy: "Assignment",
+    fixed: "Fixed",
+    roundRobin: "Round robin",
+    loadBalanced: "Load balanced",
+    assignees: "Assignees",
+    preview: "Next occurrences",
+    active: "Active",
+    weekly: "Weekly",
+    daily: "Daily",
+    monthly: "Monthly",
+    save: "Save schedule",
+  },
+  areas: {
+    title: "Areas",
+    cadenceDays: "Cadence (days)",
+    icon: "Icon",
+    save: "Save",
+  },
+  settings: {
+    title: "Settings",
+    notifications: "Notifications",
+    enablePush: "Enable reminders on this device",
+    pushEnabled: "Reminders enabled on this device",
+    morning: "Morning reminder",
+    evening: "Evening reminder",
+    testPush: "Send a test notification",
+    iosHint:
+      "On iPhone, install Chores to your home screen first — push works from the installed app only.",
+    saveTimes: "Save reminder times",
+  },
+  calendar: {
+    title: "Calendar",
+    today: "Today",
+    filters: "Filters",
+    assignee: "Assignee",
+    area: "Area",
+    status: "Status",
+    all: "All",
+    more: "more",
+  },
+  errors: {
+    generic: "Something went wrong. Try again.",
+    notAllowed: "You are not allowed to do that.",
+    notFound: "Not found.",
+  },
+} as const;
+
+// Fixed avatar palette — Tailwind-safe, used consistently across calendar
+// chips, dashboard mine-highlight, and family avatars.
+export const AVATAR_COLORS = [
+  { id: "rose", hex: "#f43f5e" },
+  { id: "amber", hex: "#f59e0b" },
+  { id: "emerald", hex: "#10b981" },
+  { id: "sky", hex: "#0ea5e9" },
+  { id: "violet", hex: "#8b5cf6" },
+  { id: "slate", hex: "#64748b" },
+] as const;
+
+export type AvatarColorId = (typeof AVATAR_COLORS)[number]["id"];
+
+export const DIRT_ICONS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: "✨",
+  1: "🙂",
+  2: "😐",
+  3: "😬",
+  4: "🤢",
+};
+
+export const DEFAULT_AREAS = [
+  { name: "Kitchen", icon: "🍳", expected_cadence_days: 1, sort_order: 1 },
+  { name: "Bathroom", icon: "🛏️", expected_cadence_days: 3, sort_order: 2 },
+  { name: "Toilet", icon: "🚽", expected_cadence_days: 2, sort_order: 3 },
+  { name: "Living Room", icon: "🛋️", expected_cadence_days: 2, sort_order: 4 },
+  { name: "Bedroom", icon: "🛌", expected_cadence_days: 7, sort_order: 5 },
+  { name: "Entrance", icon: "🚪", expected_cadence_days: 7, sort_order: 6 },
+  { name: "Laundry", icon: "🧺", expected_cadence_days: 3, sort_order: 7 },
+] as const;
