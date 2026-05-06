@@ -7,12 +7,14 @@ Phone-first household chore manager for a family of 2 parents + young children. 
 
 ## Quick start
 
+Uses **pnpm** (lockfile is `pnpm-lock.yaml`; `packageManager` is pinned in `package.json`).
+
 ```bash
-npm install
+pnpm install
 cp .env.example .env.local       # fill in the Supabase + VAPID values
-npm run dev                      # http://localhost:3000
-npm run test                     # vitest unit suite (~30 tests)
-npm run typecheck
+pnpm dev                         # http://localhost:3000
+pnpm test                        # vitest unit suite (~30 tests)
+pnpm typecheck
 ```
 
 ## Supabase setup
@@ -90,12 +92,12 @@ Once per project:
 
 ## Tests
 
-- `npm run test` — Vitest unit suite (~30 tests).
+- `pnpm test` — Vitest unit suite (~30 tests).
   - `tests/unit/dirt.test.ts` — dirt level math
   - `tests/unit/reconcile.test.ts` — schedule edit reconcile (the spec called this out specifically)
   - `tests/unit/assignment.test.ts` — fixed/round_robin/load_balanced
   - `tests/unit/rrule-expand.test.ts` — rrule parsing + window-low check
-- `npm run test:integration` — runs against `supabase start`. Wire up `tests/integration/setup.ts` (placeholder) before adding integration tests for AC #8 RLS smoke and AC #7 reminder idempotency.
+- `pnpm test:integration` — runs against `supabase start`. Wire up `tests/integration/setup.ts` (placeholder) before adding integration tests for AC #8 RLS smoke and AC #7 reminder idempotency.
 
 ## Out of scope for v1
 
