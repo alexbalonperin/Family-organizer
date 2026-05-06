@@ -29,14 +29,14 @@ Once per project:
    supabase link --project-ref YOUR-PROJECT-REF
    supabase db push
    ```
-   Migrations live in `supabase/migrations/000{1..8}_*.sql` and are the source of truth for schema, RLS, helper functions, and cron jobs.
-5. **Set settings used by cron** (run once in the SQL editor as project owner):
+   Migrations live in `supabase/migrations/000{1..9}_*.sql` and are the source of truth for schema, RLS, helper functions, and cron jobs.
+5. **Store the URL + service-role key in Vault** so `pg_cron` can call Edge Functions (run once in the SQL editor):
    ```sql
-   alter database postgres set "app.settings.supabase_url"
-     = 'https://YOUR-PROJECT.supabase.co';
-   alter database postgres set "app.settings.service_role_key"
-     = 'YOUR-SERVICE-ROLE-KEY';
+   select vault.create_secret('https://YOUR-PROJECT-REF.supabase.co', 'supabase_url');
+   select vault.create_secret('YOUR-SERVICE-ROLE-KEY',                'service_role_key');
+   -- to rotate later: select vault.update_secret(id, 'NEW_VALUE');
    ```
+   `app_secret('name')` (defined in migration 0009) reads them at cron time. Plain `ALTER DATABASE ... SET` does not work on hosted Supabase — that's why we use Vault.
 6. **Generate VAPID keys** for push:
    ```bash
    npx web-push generate-vapid-keys
@@ -88,6 +88,7 @@ Once per project:
 0006_generate_instances.sql  pick_assignee + cron-callable generator
 0007_reminders.sql         send_due_reminders
 0008_cron.sql              pg_cron job 1 + job 2
+0009_cron_secrets_via_vault.sql  app_secret() helper, rewires cron fns to read from Vault
 ```
 
 ## Tests

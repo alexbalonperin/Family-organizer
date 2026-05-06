@@ -3,13 +3,9 @@
 --
 -- Required Supabase project setup before this migration runs cleanly:
 --   1. Enable pg_cron and pg_net extensions in the dashboard.
---   2. Run, as the project owner, in SQL editor:
---        alter database postgres set "app.settings.supabase_url"
---          = 'https://YOUR-PROJECT.supabase.co';
---        alter database postgres set "app.settings.service_role_key"
---          = 'YOUR-SERVICE-ROLE-KEY';
---      These settings are read by generate_upcoming_instances and
---      send_due_reminders to call Edge Functions via pg_net.
+--   2. Insert the URL + service-role key into Vault — see migration 0009
+--      and the README. (Hosted Supabase does not allow `alter database
+--      postgres set ...` for arbitrary GUCs; Vault is the supported path.)
 
 create extension if not exists pg_cron;
 
