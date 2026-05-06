@@ -141,12 +141,15 @@ export const AVATAR_COLORS = [
 
 export type AvatarColorId = (typeof AVATAR_COLORS)[number]["id"];
 
+// Dirt as a character whose face gets redder and angrier over time. The
+// color ramp (white → red → imp) is what carries the visual progression —
+// emoji all render at the same size, so colour is the strongest signal.
 export const DIRT_ICONS: Record<0 | 1 | 2 | 3 | 4, string> = {
   0: "✨",
-  1: "🙂",
-  2: "😐",
-  3: "😬",
-  4: "🤢",
+  1: "😐",
+  2: "😠",
+  3: "😡",
+  4: "👿",
 };
 
 export const DEFAULT_AREAS = [
