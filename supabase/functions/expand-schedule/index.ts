@@ -4,8 +4,8 @@
 // writes the result back to task_schedules.next_occurrences.
 //
 // Body: { schedule_id: string }
-// Auth: project anon key (verify_jwt = false in config.toml — pg_net calls
-//       this internally, no end-user auth context).
+// Auth: verify_jwt = false in config.toml — pg_net calls this internally
+//       with the service-role bearer token; no end-user auth context.
 
 // @ts-nocheck — Deno runtime; types resolved by `supabase functions serve`.
 import { createClient } from "npm:@supabase/supabase-js@2";
