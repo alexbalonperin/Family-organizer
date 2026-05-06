@@ -19,7 +19,7 @@ npm run typecheck
 
 Once per project:
 
-1. **Create a Supabase project** and grab the URL, anon key, and service role key. Put them in `.env.local`.
+1. **Create a Supabase project** and grab the URL, publishable key (`sb_publishable_...`), and service role key. Put them in `.env.local`.
 2. **Enable Google OAuth** in Auth → Providers. Set the redirect URL to `https://YOUR-DOMAIN/api/auth/callback` (and `http://localhost:3000/api/auth/callback` for local).
 3. **Enable extensions** in Database → Extensions: `pg_cron`, `pg_net`, `pgcrypto`, `uuid-ossp`.
 4. **Apply migrations** (in order):
