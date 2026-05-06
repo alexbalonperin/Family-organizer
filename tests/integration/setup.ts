@@ -1,5 +1,5 @@
 // Integration test bootstrap. Spawn `supabase start` in another terminal
-// before running `npm run test:integration`.
+// before running `pnpm test:integration`.
 //
 // Tests in this directory should:
 //   - read SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY from local supabase
