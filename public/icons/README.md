@@ -1,19 +1,18 @@
 # PWA icons
 
-Drop the following files here before deploying:
-
-- `icon-192.png` (192x192)
-- `icon-512.png` (512x512)
-- `icon-maskable.png` (512x512, with safe area in the center 80%)
-
-Quick generation with ImageMagick:
+Generated from `app/icon.svg` by `scripts/generate-icons.mjs`. Re-run with:
 
 ```bash
-magick -size 512x512 xc:'#0ea5e9' \
-  -gravity center -fill white -font sans -pointsize 360 \
-  -annotate 0 '🧹' icon-512.png
-magick icon-512.png -resize 192x192 icon-192.png
-cp icon-512.png icon-maskable.png
+pnpm icons
 ```
 
-Or use any of the online PWA icon generators with a single 512x512 source.
+That writes:
+
+- `public/icons/icon-192.png` (192×192) — manifest
+- `public/icons/icon-512.png` (512×512) — manifest
+- `public/icons/icon-maskable.png` (512×512, with safe-area padding) — manifest
+- `app/apple-icon.png` (180×180) — iOS home-screen
+
+The browser favicon is `app/icon.svg` itself; Next.js auto-generates the `<link rel="icon">` tag.
+
+Edit `app/icon.svg` to change the design, then re-run `pnpm icons`. The maskable variant uses a smaller checkmark in the same script so the inner 60% safe area is preserved when an OS crops the corners.
