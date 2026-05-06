@@ -14,11 +14,7 @@ const createSchema = z.object({
   name: z.string().min(1).max(80),
   area_id: z.string().uuid(),
   duration: z.coerce.number().int().min(1).max(480),
-  // Empty string from the form means "inherit area cadence" → null in DB.
-  cadence: z
-    .union([z.coerce.number().int().min(1).max(365), z.literal("")])
-    .optional()
-    .transform((v) => (v === "" || v === undefined ? null : v)),
+  cadence: z.coerce.number().int().min(1).max(365),
   description: z.string().max(2000).optional(),
 });
 
@@ -38,7 +34,7 @@ export async function createTemplate(formData: FormData) {
     name: formData.get("name"),
     area_id: formData.get("area_id"),
     duration: formData.get("duration"),
-    cadence: formData.get("cadence") ?? "",
+    cadence: formData.get("cadence"),
     description: formData.get("description") || undefined,
   });
   if (!parsed.success) return { error: messages.errors.generic };
@@ -86,7 +82,7 @@ export async function updateTemplate(formData: FormData) {
     name: formData.get("name"),
     area_id: formData.get("area_id"),
     duration: formData.get("duration"),
-    cadence: formData.get("cadence") ?? "",
+    cadence: formData.get("cadence"),
     description: formData.get("description") || undefined,
   });
   if (!parsed.success) return { error: messages.errors.generic };

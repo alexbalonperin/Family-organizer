@@ -33,11 +33,7 @@ export default async function TemplatesPage() {
         </div>
         {isParent && (
           <NewTemplateButton
-            areas={areas.map((a) => ({
-              id: a.id,
-              name: a.name,
-              expectedCadenceDays: a.expectedCadenceDays,
-            }))}
+            areas={areas.map((a) => ({ id: a.id, name: a.name }))}
           />
         )}
       </div>

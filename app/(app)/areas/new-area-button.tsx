@@ -52,18 +52,6 @@ export function NewAreaButton() {
               <Input id="new-area-name" name="name" required autoFocus />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="new-area-cadence">{messages.areas.cadenceDays}</Label>
-            <Input
-              id="new-area-cadence"
-              name="cadence"
-              type="number"
-              min={1}
-              max={365}
-              defaultValue={7}
-              required
-            />
-          </div>
           <div className="flex gap-2">
             <Button type="submit" disabled={pending}>
               {messages.areas.save}

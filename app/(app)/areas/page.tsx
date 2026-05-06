@@ -15,7 +15,7 @@ export default async function AreasPage() {
         <div>
           <h1 className="text-2xl font-bold">{messages.areas.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Tune cadence so dirt levels stay honest.
+            Group your chores. Cadence lives on each template.
           </p>
         </div>
         {isParent && <NewAreaButton />}
@@ -28,7 +28,6 @@ export default async function AreasPage() {
             id={a.id}
             name={a.name}
             icon={a.icon}
-            expectedCadenceDays={a.expectedCadenceDays}
             dirtLevel={(a.dirtLevel ?? 4) as 0 | 1 | 2 | 3 | 4}
             dirtIcon={DIRT_ICONS[(a.dirtLevel ?? 4) as 0 | 1 | 2 | 3 | 4]}
             canEdit={isParent}

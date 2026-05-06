@@ -8,7 +8,6 @@ export async function listAreas(householdId: string) {
       id: schema.areas.id,
       name: schema.areas.name,
       icon: schema.areas.icon,
-      expectedCadenceDays: schema.areas.expectedCadenceDays,
       sortOrder: schema.areas.sortOrder,
       lastCleanedAt: schema.areaState.lastCleanedAt,
       dirtLevel: schema.areaState.dirtLevel,

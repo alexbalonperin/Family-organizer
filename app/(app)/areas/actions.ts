@@ -10,7 +10,6 @@ import { messages } from "@/lib/messages";
 const schemaCreate = z.object({
   name: z.string().min(1).max(60),
   icon: z.string().min(1).max(4),
-  cadence: z.coerce.number().int().min(1).max(365),
 });
 
 const schemaUpdate = schemaCreate.extend({
@@ -28,7 +27,6 @@ export async function createArea(formData: FormData) {
   const parsed = schemaCreate.safeParse({
     name: formData.get("name"),
     icon: formData.get("icon"),
-    cadence: formData.get("cadence"),
   });
   if (!parsed.success) return { error: messages.errors.generic };
 
@@ -43,7 +41,6 @@ export async function createArea(formData: FormData) {
       householdId: me.householdId,
       name: parsed.data.name,
       icon: parsed.data.icon,
-      expectedCadenceDays: parsed.data.cadence,
       sortOrder: (maxSort ?? 0) + 1,
     })
     .returning({ id: schema.areas.id });
@@ -67,7 +64,6 @@ export async function updateArea(formData: FormData) {
     id: formData.get("id"),
     name: formData.get("name"),
     icon: formData.get("icon"),
-    cadence: formData.get("cadence"),
   });
   if (!parsed.success) return { error: messages.errors.generic };
 
@@ -76,7 +72,6 @@ export async function updateArea(formData: FormData) {
     .set({
       name: parsed.data.name,
       icon: parsed.data.icon,
-      expectedCadenceDays: parsed.data.cadence,
     })
     .where(
       and(

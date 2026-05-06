@@ -53,7 +53,6 @@ export const areas = pgTable(
     householdId: uuid("household_id").notNull(),
     name: text("name").notNull(),
     icon: text("icon").notNull().default("🧹"),
-    expectedCadenceDays: integer("expected_cadence_days").notNull(),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -75,7 +74,7 @@ export const taskTemplates = pgTable(
     expectedDurationMinutes: integer("expected_duration_minutes")
       .notNull()
       .default(15),
-    expectedCadenceDays: integer("expected_cadence_days"),
+    expectedCadenceDays: integer("expected_cadence_days").notNull(),
     createdByUserId: uuid("created_by_user_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

@@ -37,11 +37,7 @@ export default async function TemplateDetailPage({
 
       <TemplateEditor
         template={template}
-        areas={areas.map(({ id, name, expectedCadenceDays }) => ({
-          id,
-          name,
-          expectedCadenceDays,
-        }))}
+        areas={areas.map(({ id, name }) => ({ id, name }))}
         canEdit={isParent}
       />
 

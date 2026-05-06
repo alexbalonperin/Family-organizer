@@ -13,7 +13,6 @@ interface Props {
   id: string;
   name: string;
   icon: string;
-  expectedCadenceDays: number;
   dirtLevel: 0 | 1 | 2 | 3 | 4;
   dirtIcon: string;
   canEdit: boolean;
@@ -60,20 +59,6 @@ export function AreaRow(props: Props) {
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor={`cadence-${props.id}`}>
-                {messages.areas.cadenceDays}
-              </Label>
-              <Input
-                id={`cadence-${props.id}`}
-                name="cadence"
-                type="number"
-                min={1}
-                max={365}
-                defaultValue={props.expectedCadenceDays}
-                required
-              />
-            </div>
             <div className="flex gap-2">
               <Button type="submit" size="sm" disabled={pending}>
                 {messages.areas.save}
@@ -96,9 +81,7 @@ export function AreaRow(props: Props) {
               </span>
               <div>
                 <p className="font-medium">{props.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  Every {props.expectedCadenceDays}d · {props.dirtIcon}
-                </p>
+                <p className="text-xs text-muted-foreground">{props.dirtIcon}</p>
               </div>
             </div>
             {props.canEdit && (
