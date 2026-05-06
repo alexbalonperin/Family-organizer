@@ -3,8 +3,11 @@ import Link from "next/link";
 import { getCurrentUserOrRedirect } from "@/lib/auth";
 import { getTemplate } from "@/db/queries/templates";
 import { listAreas } from "@/db/queries/areas";
+import { listSchedulesForTemplate } from "@/db/queries/schedules";
+import { listHouseholdMembers } from "@/db/queries/users";
 import { Button } from "@/components/ui/button";
 import { TemplateEditor } from "./template-editor";
+import { SchedulesPanel } from "./schedules-panel";
 
 export default async function TemplateDetailPage({
   params,
@@ -13,9 +16,11 @@ export default async function TemplateDetailPage({
 }) {
   const { id } = await params;
   const me = await getCurrentUserOrRedirect();
-  const [template, areas] = await Promise.all([
+  const [template, areas, schedules, members] = await Promise.all([
     getTemplate(me.householdId, id),
     listAreas(me.householdId),
+    listSchedulesForTemplate(me.householdId, id),
+    listHouseholdMembers(me.householdId),
   ]);
   if (!template) notFound();
   const isParent = me.role === "parent";
@@ -33,6 +38,17 @@ export default async function TemplateDetailPage({
       <TemplateEditor
         template={template}
         areas={areas.map(({ id, name }) => ({ id, name }))}
+        canEdit={isParent}
+      />
+
+      <SchedulesPanel
+        templateId={template.id}
+        schedules={schedules}
+        members={members.map((m) => ({
+          id: m.id,
+          displayName: m.displayName,
+          avatarColor: m.avatarColor,
+        }))}
         canEdit={isParent}
       />
     </div>

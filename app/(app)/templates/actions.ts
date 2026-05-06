@@ -1,11 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { db, schema } from "@/db/client";
 import { getCurrentUserOrRedirect, assertParent } from "@/lib/auth";
 import { messages } from "@/lib/messages";
+import { expandSchedule } from "@/lib/rrule/expand";
+import { reconcileSchedule } from "@/lib/rrule/reconcile";
+import { jstDateString } from "@/lib/tz";
 
 const createSchema = z.object({
   name: z.string().min(1).max(80),
@@ -164,5 +167,215 @@ export async function saveChecklist(
   }
 
   revalidatePath(`/templates/${templateId}`);
+  return { ok: true };
+}
+
+// ---------------------------------------------------------------------------
+// Schedules
+// ---------------------------------------------------------------------------
+
+const saveScheduleSchema = z.object({
+  templateId: z.string().uuid(),
+  scheduleId: z.string().uuid().nullable(),
+  rruleString: z.string().min(5).max(1000),
+  assignmentPolicy: z.enum(["fixed", "round_robin", "load_balanced"]),
+  assigneeUserIds: z.array(z.string().uuid()).min(1),
+  active: z.boolean(),
+});
+
+const EXPAND_DAYS = 30;
+
+export async function saveSchedule(input: {
+  templateId: string;
+  scheduleId: string | null;
+  rruleString: string;
+  assignmentPolicy: "fixed" | "round_robin" | "load_balanced";
+  assigneeUserIds: string[];
+  active: boolean;
+}) {
+  const me = await getCurrentUserOrRedirect();
+  try {
+    assertParent(me);
+  } catch {
+    return { error: messages.errors.notAllowed };
+  }
+
+  const parsed = saveScheduleSchema.safeParse(input);
+  if (!parsed.success) return { error: messages.errors.generic };
+
+  // Verify template ownership.
+  const [tpl] = await db
+    .select({ id: schema.taskTemplates.id })
+    .from(schema.taskTemplates)
+    .where(
+      and(
+        eq(schema.taskTemplates.id, parsed.data.templateId),
+        eq(schema.taskTemplates.householdId, me.householdId),
+      ),
+    )
+    .limit(1);
+  if (!tpl) return { error: messages.errors.notFound };
+
+  // Verify all assignees belong to the household.
+  const assigneeRows = await db
+    .select({ id: schema.users.id })
+    .from(schema.users)
+    .where(
+      and(
+        eq(schema.users.householdId, me.householdId),
+        inArray(schema.users.id, parsed.data.assigneeUserIds),
+      ),
+    );
+  if (assigneeRows.length !== parsed.data.assigneeUserIds.length) {
+    return { error: messages.errors.notFound };
+  }
+
+  // Expand rrule for the next 30 days.
+  let nextOccurrences: string[];
+  try {
+    nextOccurrences = expandSchedule(
+      parsed.data.rruleString,
+      new Date(),
+      EXPAND_DAYS,
+    );
+  } catch {
+    return { error: "Invalid recurrence rule." };
+  }
+
+  const today = jstDateString();
+
+  await db.transaction(async (tx) => {
+    let scheduleId = parsed.data.scheduleId;
+
+    if (scheduleId) {
+      // Edit path: load existing instances, run reconcile, delete dropped pendings.
+      const existing = await tx
+        .select({
+          id: schema.taskInstances.id,
+          scheduledFor: schema.taskInstances.scheduledFor,
+          status: schema.taskInstances.status,
+        })
+        .from(schema.taskInstances)
+        .where(eq(schema.taskInstances.scheduleId, scheduleId));
+
+      const result = reconcileSchedule({
+        existing: existing.map((e) => ({
+          id: e.id,
+          scheduledFor: e.scheduledFor,
+          status: e.status,
+        })),
+        newOccurrences: nextOccurrences,
+        today,
+      });
+
+      if (result.toDeleteIds.length > 0) {
+        await tx
+          .delete(schema.taskInstances)
+          .where(inArray(schema.taskInstances.id, result.toDeleteIds));
+      }
+
+      await tx
+        .update(schema.taskSchedules)
+        .set({
+          rruleString: parsed.data.rruleString,
+          assignmentPolicy: parsed.data.assignmentPolicy,
+          assigneeUserIds: parsed.data.assigneeUserIds,
+          nextOccurrences,
+          active: parsed.data.active,
+        })
+        .where(
+          and(
+            eq(schema.taskSchedules.id, scheduleId),
+            eq(schema.taskSchedules.householdId, me.householdId),
+          ),
+        );
+    } else {
+      // Create path.
+      const [row] = await tx
+        .insert(schema.taskSchedules)
+        .values({
+          householdId: me.householdId,
+          templateId: parsed.data.templateId,
+          rruleString: parsed.data.rruleString,
+          assignmentPolicy: parsed.data.assignmentPolicy,
+          assigneeUserIds: parsed.data.assigneeUserIds,
+          nextOccurrences,
+          active: parsed.data.active,
+        })
+        .returning({ id: schema.taskSchedules.id });
+      scheduleId = row.id;
+    }
+  });
+
+  revalidatePath(`/templates/${parsed.data.templateId}`);
+  revalidatePath("/tasks");
+  revalidatePath("/calendar");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function deleteSchedule(scheduleId: string) {
+  const me = await getCurrentUserOrRedirect();
+  try {
+    assertParent(me);
+  } catch {
+    return { error: messages.errors.notAllowed };
+  }
+
+  const today = jstDateString();
+
+  await db.transaction(async (tx) => {
+    // Delete only pending future instances; preserve history.
+    await tx
+      .delete(schema.taskInstances)
+      .where(
+        and(
+          eq(schema.taskInstances.scheduleId, scheduleId),
+          eq(schema.taskInstances.householdId, me.householdId),
+          eq(schema.taskInstances.status, "pending"),
+        ),
+      );
+
+    await tx
+      .delete(schema.taskSchedules)
+      .where(
+        and(
+          eq(schema.taskSchedules.id, scheduleId),
+          eq(schema.taskSchedules.householdId, me.householdId),
+        ),
+      );
+
+    // Suppress unused-warning while keeping `today` available if we extend.
+    void today;
+  });
+
+  revalidatePath("/tasks");
+  revalidatePath("/calendar");
+  revalidatePath("/dashboard");
+  return { ok: true };
+}
+
+export async function toggleScheduleActive(
+  scheduleId: string,
+  active: boolean,
+) {
+  const me = await getCurrentUserOrRedirect();
+  try {
+    assertParent(me);
+  } catch {
+    return { error: messages.errors.notAllowed };
+  }
+
+  await db
+    .update(schema.taskSchedules)
+    .set({ active })
+    .where(
+      and(
+        eq(schema.taskSchedules.id, scheduleId),
+        eq(schema.taskSchedules.householdId, me.householdId),
+      ),
+    );
+
+  revalidatePath("/templates");
   return { ok: true };
 }
