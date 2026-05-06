@@ -75,6 +75,7 @@ export const taskTemplates = pgTable(
     expectedDurationMinutes: integer("expected_duration_minutes")
       .notNull()
       .default(15),
+    expectedCadenceDays: integer("expected_cadence_days"),
     createdByUserId: uuid("created_by_user_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

@@ -33,10 +33,11 @@ interface Props {
     name: string;
     description: string | null;
     expectedDurationMinutes: number;
+    expectedCadenceDays: number | null;
     areaId: string;
     items: Item[];
   };
-  areas: { id: string; name: string }[];
+  areas: { id: string; name: string; expectedCadenceDays: number }[];
   canEdit: boolean;
 }
 
@@ -53,6 +54,9 @@ export function TemplateEditor({ template, areas, canEdit }: Props) {
   const [items, setItems] = useState<DraftItem[]>(
     template.items.map((i) => ({ key: i.id, id: i.id, label: i.label })),
   );
+  const [areaId, setAreaId] = useState(template.areaId);
+  const areaCadence =
+    areas.find((a) => a.id === areaId)?.expectedCadenceDays ?? null;
 
   function addItem() {
     setItems((prev) => [
@@ -139,7 +143,8 @@ export function TemplateEditor({ template, areas, canEdit }: Props) {
                 <Select
                   id="area_id"
                   name="area_id"
-                  defaultValue={template.areaId}
+                  value={areaId}
+                  onChange={(e) => setAreaId(e.target.value)}
                   disabled={!canEdit}
                 >
                   {areas.map((a) => (
@@ -161,6 +166,21 @@ export function TemplateEditor({ template, areas, canEdit }: Props) {
                   disabled={!canEdit}
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cadence">{messages.templates.cadence}</Label>
+              <Input
+                id="cadence"
+                name="cadence"
+                type="number"
+                min={1}
+                max={365}
+                defaultValue={template.expectedCadenceDays ?? ""}
+                placeholder={
+                  areaCadence != null ? `Area: ${areaCadence}d` : ""
+                }
+                disabled={!canEdit}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="description">

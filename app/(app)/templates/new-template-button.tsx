@@ -13,13 +13,16 @@ import { createTemplate } from "./actions";
 import { toast } from "sonner";
 
 interface Props {
-  areas: { id: string; name: string }[];
+  areas: { id: string; name: string; expectedCadenceDays: number }[];
 }
 
 export function NewTemplateButton({ areas }: Props) {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  const [areaId, setAreaId] = useState(areas[0]?.id ?? "");
+  const areaCadence =
+    areas.find((a) => a.id === areaId)?.expectedCadenceDays ?? null;
 
   function handleSubmit(formData: FormData) {
     startTransition(async () => {
@@ -51,7 +54,13 @@ export function NewTemplateButton({ areas }: Props) {
           </div>
           <div className="space-y-2">
             <Label htmlFor="area_id">{messages.templates.area}</Label>
-            <Select id="area_id" name="area_id" required>
+            <Select
+              id="area_id"
+              name="area_id"
+              value={areaId}
+              onChange={(e) => setAreaId(e.target.value)}
+              required
+            >
               {areas.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name}
@@ -59,16 +68,31 @@ export function NewTemplateButton({ areas }: Props) {
               ))}
             </Select>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="duration">{messages.templates.duration}</Label>
-            <Input
-              id="duration"
-              name="duration"
-              type="number"
-              min={1}
-              max={480}
-              defaultValue={15}
-            />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <Label htmlFor="duration">{messages.templates.duration}</Label>
+              <Input
+                id="duration"
+                name="duration"
+                type="number"
+                min={1}
+                max={480}
+                defaultValue={15}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cadence">{messages.templates.cadence}</Label>
+              <Input
+                id="cadence"
+                name="cadence"
+                type="number"
+                min={1}
+                max={365}
+                placeholder={
+                  areaCadence != null ? `Area: ${areaCadence}d` : ""
+                }
+              />
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">{messages.templates.description}</Label>

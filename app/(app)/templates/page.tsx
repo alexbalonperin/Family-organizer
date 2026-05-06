@@ -31,7 +31,15 @@ export default async function TemplatesPage() {
             One template per repeating chore. Schedules attach to templates.
           </p>
         </div>
-        {isParent && <NewTemplateButton areas={areas} />}
+        {isParent && (
+          <NewTemplateButton
+            areas={areas.map((a) => ({
+              id: a.id,
+              name: a.name,
+              expectedCadenceDays: a.expectedCadenceDays,
+            }))}
+          />
+        )}
       </div>
 
       <div className="space-y-6">

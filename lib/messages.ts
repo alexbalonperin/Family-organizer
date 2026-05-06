@@ -70,6 +70,7 @@ export const messages = {
     description: "Description",
     area: "Area",
     duration: "Estimated minutes",
+    cadence: "Cadence (days)",
     checklist: "Checklist",
     addItem: "Add item",
     schedules: "Schedules",
@@ -150,7 +151,7 @@ export const DIRT_ICONS: Record<0 | 1 | 2 | 3 | 4, string> = {
 
 export const DEFAULT_AREAS = [
   { name: "Kitchen", icon: "🍳", expected_cadence_days: 1, sort_order: 1 },
-  { name: "Bathroom", icon: "🛏️", expected_cadence_days: 3, sort_order: 2 },
+  { name: "Bathroom", icon: "🛁", expected_cadence_days: 3, sort_order: 2 },
   { name: "Toilet", icon: "🚽", expected_cadence_days: 2, sort_order: 3 },
   { name: "Living Room", icon: "🛋️", expected_cadence_days: 2, sort_order: 4 },
   { name: "Bedroom", icon: "🛌", expected_cadence_days: 7, sort_order: 5 },

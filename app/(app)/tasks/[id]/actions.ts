@@ -117,8 +117,11 @@ export async function completeTask(
     .limit(1);
   if (!member) return { error: messages.errors.notFound };
 
-  // Update instance, set area_state.last_cleaned_at, then refresh dirt level.
-  // Wrapped in a single transaction for atomicity.
+  // Update instance, stamp area_state.last_cleaned_at as a "most recent
+  // activity" signal, then recompute dirt levels. Under the per-template
+  // model the dirt level itself comes from the recompute (max ratio across
+  // templates in the area), not from this stamp — so we no longer force
+  // dirt_level to 0 here.
   await db.transaction(async (tx) => {
     await tx
       .update(schema.taskInstances)
@@ -130,7 +133,6 @@ export async function completeTask(
       })
       .where(eq(schema.taskInstances.id, taskId));
 
-    // Look up the area for this instance.
     const [areaRow] = await tx
       .select({ areaId: schema.taskTemplates.areaId })
       .from(schema.taskInstances)
@@ -143,18 +145,13 @@ export async function completeTask(
     if (areaRow) {
       await tx
         .insert(schema.areaState)
-        .values({
-          areaId: areaRow.areaId,
-          lastCleanedAt: new Date(),
-          dirtLevel: 0,
-        })
+        .values({ areaId: areaRow.areaId, lastCleanedAt: new Date() })
         .onConflictDoUpdate({
           target: schema.areaState.areaId,
-          set: { lastCleanedAt: new Date(), dirtLevel: 0 },
+          set: { lastCleanedAt: new Date() },
         });
     }
 
-    // Recompute dirt for the household.
     await tx.execute(
       sql`select refresh_dirt_levels(${guard.me!.householdId})`,
     );

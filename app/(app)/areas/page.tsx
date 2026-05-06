@@ -2,6 +2,7 @@ import { getCurrentUserOrRedirect } from "@/lib/auth";
 import { listAreas } from "@/db/queries/areas";
 import { messages, DIRT_ICONS } from "@/lib/messages";
 import { AreaRow } from "./area-row";
+import { NewAreaButton } from "./new-area-button";
 
 export default async function AreasPage() {
   const me = await getCurrentUserOrRedirect();
@@ -10,11 +11,14 @@ export default async function AreasPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{messages.areas.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          Tune cadence so dirt levels stay honest.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">{messages.areas.title}</h1>
+          <p className="text-sm text-muted-foreground">
+            Tune cadence so dirt levels stay honest.
+          </p>
+        </div>
+        {isParent && <NewAreaButton />}
       </div>
 
       <ul className="space-y-2">
