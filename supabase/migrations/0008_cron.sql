@@ -19,3 +19,10 @@ select cron.schedule(
   '0 20 * * *',
   $$select generate_upcoming_instances();$$
 );
+
+-- Reminder push sender: every 15 minutes.
+select cron.schedule(
+  'send-due-reminders',
+  '*/15 * * * *',
+  $$select send_due_reminders();$$
+);
