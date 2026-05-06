@@ -70,7 +70,7 @@ Deno.serve(async (req) => {
   }
 
   // Build the notification payload.
-  let title = payload.title ?? "Chores";
+  let title = payload.title ?? "SoujiShiyo";
   let body = payload.body ?? "";
   let url = payload.url ?? "/";
 

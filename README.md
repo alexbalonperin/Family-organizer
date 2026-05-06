@@ -1,4 +1,4 @@
-# Chores
+# SoujiShiyo
 
 Phone-first household chore manager for a family of 2 parents + young children. Vercel + Supabase.
 

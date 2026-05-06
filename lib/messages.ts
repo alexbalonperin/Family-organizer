@@ -3,7 +3,7 @@
 
 export const messages = {
   app: {
-    name: "Chores",
+    name: "SoujiShiyo",
     tagline: "Keep the house in shape.",
   },
   auth: {
@@ -107,7 +107,7 @@ export const messages = {
     evening: "Evening reminder",
     testPush: "Send a test notification",
     iosHint:
-      "On iPhone, install Chores to your home screen first — push works from the installed app only.",
+      "On iPhone, install SoujiShiyo to your home screen first — push works from the installed app only.",
     saveTimes: "Save reminder times",
   },
   calendar: {

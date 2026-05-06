@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Chores",
+  title: "SoujiShiyo",
   description: "Keep the house in shape.",
   manifest: "/manifest.webmanifest",
 };

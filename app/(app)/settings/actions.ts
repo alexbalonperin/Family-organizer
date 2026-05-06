@@ -111,7 +111,7 @@ export async function sendTestPush() {
     body: JSON.stringify({
       user_id: me.id,
       test: true,
-      title: "Chores",
+      title: "SoujiShiyo",
       body: "🧹 This is a test push.",
       url: "/dashboard",
     }),
