@@ -17,14 +17,12 @@ interface SearchParams {
 }
 
 function parseMonth(input: string | undefined): { year: number; month: number } {
-  const today = new Date();
   if (input && /^\d{4}-\d{2}$/.test(input)) {
     const [y, m] = input.split("-").map(Number);
     return { year: y, month: m };
   }
   // Default to JST current month.
-  const jstToday = jstDateString();
-  const [y, m] = jstToday.split("-").map(Number);
+  const [y, m] = jstDateString().split("-").map(Number);
   return { year: y, month: m };
 }
 
@@ -43,12 +41,10 @@ export default async function CalendarPage({
   const { year, month } = parseMonth(sp.month);
 
   const startDate = `${year}-${month.toString().padStart(2, "0")}-01`;
-  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
-  const endExclusiveDate = `${year}-${month.toString().padStart(2, "0")}-${(
-    lastDay + 1
-  )
+  const next = shiftMonth(year, month, 1);
+  const endExclusiveDate = `${next.year}-${next.month
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, "0")}-01`;
 
   const [tasks, areas, members] = await Promise.all([
     listTasks({
@@ -69,7 +65,6 @@ export default async function CalendarPage({
   ]);
 
   const prev = shiftMonth(year, month, -1);
-  const next = shiftMonth(year, month, 1);
   const todayParam = jstDateString().slice(0, 7);
   const monthLabel = new Date(Date.UTC(year, month - 1, 1)).toLocaleString(
     "en-US",

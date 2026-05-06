@@ -1,4 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
 export async function createSupabaseServerClient() {
@@ -30,7 +31,6 @@ export async function createSupabaseServerClient() {
 export function createSupabaseServiceRoleClient() {
   // For privileged server-only operations (e.g. seeding, internal scripts).
   // Never expose the service role key to the browser.
-  const { createClient } = require("@supabase/supabase-js");
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
